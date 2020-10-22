@@ -10,6 +10,14 @@ import java.io.IOException;
 
 @WebServlet(name = "HelloServlet", urlPatterns = {"/hello"}, loadOnStartup = 1)
 public class HelloServlet extends HttpServlet {
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    public HelloServlet() {
+        super();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Greeting greeting = new Greeting();
         greeting.setId(1);
@@ -18,11 +26,6 @@ public class HelloServlet extends HttpServlet {
         greeting.getTranslations().put("fr", "Bonjour Monde!");
 
         response.setContentType("application/json");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        String json = objectMapper.writeValueAsString(greeting);
-
-        response.getWriter().print(json);
+        response.getWriter().print(objectMapper.writeValueAsString(greeting));
     }
 }
