@@ -1,5 +1,6 @@
 plugins {
     id 'war'
+    id "de.undercouch.download" version "4.1.2"
 }
 
 group 'ch.hevs.sdi'
@@ -11,5 +12,37 @@ repositories {
 
 dependencies {
     providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version:'4.0.1'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
 }
+
+war {
+    archiveName = 'HelloServlet.war'
+}
+
+task downloadTomcat(type: Download) {
+    onlyIf { !file('tomcat').exists() && !file('tomcat.zip').exists() }
+    src "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.56/bin/apache-tomcat-9.0.56.zip"
+    dest new File("tomcat.zip")
+}
+
+task extractTomcat(dependsOn: downloadTomcat, type: Copy) {
+    onlyIf { !file('tomcat').exists() }
+    from zipTree(downloadTomcat.dest)
+    into projectDir
+    doLast {
+        delete("tomcat.zip")
+        file("apache-tomcat-9.0.56").renameTo(file("tomcat"))
+    }
+}
+
+task deploy(type: Copy) {
+    dependsOn war, extractTomcat
+    from war.archivePath
+    into "./tomcat/webapps"
+}
+
+clean.doFirst {
+    delete 'tomcat'
+}
+
+defaultTasks 'deploy'
