@@ -18,7 +18,7 @@ dependencies {
 
 task downloadTomcat(type: Download) {
     onlyIf { !file('tomcat').exists() && !file('tomcat.zip').exists() }
-    src "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.56/bin/apache-tomcat-9.0.56.zip"
+    src "https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.56/bin/apache-tomcat-9.0.56.zip"
     dest new File("tomcat.zip")
 }
 
